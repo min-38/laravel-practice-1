@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,17 @@ use App\Http\Controllers\HomeController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/', [HomeController::class, 'index']);
+
+// Auth
+Route::get('/login', function() {
+    return view('contents.auth.login');
 });
+Route::get('/signup', function() {
+    return view('contents.auth.signup');
+});
+Route::post('/sign_up_process', [AuthController::class, 'sign_up_process'])->name('SignUpProcess');;
