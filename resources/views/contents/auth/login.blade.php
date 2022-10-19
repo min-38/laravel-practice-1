@@ -8,8 +8,18 @@
                     <div class="block bg-white shadow-lg rounded-lg">
                         <div class="md:p-12 md:mx-6">
                             <div class="text-center">
-                                <h4 class="text-xl font-semibold mt-1 mb-12 pb-1">로그인</h4>
-                                {{-- <img src="/imgs/login-lock.svg" alt="" class="mx-auto w-48 h-20"> --}}
+                                <h4 class="text-xl font-semibold mt-1 mb-5 pb-1">로그인</h4>
+                                @if (session('msg'))
+                                    @if (session('success'))
+                                        <div class="bg-green-300 mb-5">
+                                            {{ session('msg') }}
+                                        </div>
+                                    @else
+                                        <div class="bg-red-300 mb-5">
+                                            {{ session('msg') }}
+                                        </div>
+                                    @endif
+                                @endif
                             </div>
                             <form>
                                 <div class="mb-4">

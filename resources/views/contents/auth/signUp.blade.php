@@ -10,6 +10,12 @@
                             <div class="text-center">
                                 <h4 class="text-xl font-semibold mt-1 mb-12 pb-1">회원가입</h4>
                             </div>
+                            {{-- {{ $msg }} --}}
+                            @if (session('success'))
+                                <div class="bg-red-300 mb-5">
+                                    {{ session('msg') }}
+                                </div>
+                            @endif
                             <form role="form" method="post" action="{{ route('SignUpProcess')}}">
                                 {{ csrf_field() }}
                                 <div class="mb-4">
@@ -20,6 +26,7 @@
                                         id="username"
                                         name="username"
                                         placeholder="사용하실 닉네임을 입력하세요"
+                                        value="{{ old('username') }}"
                                     />
                                 </div>
                                 <div class="mb-4">
@@ -30,6 +37,7 @@
                                         id="userid"
                                         name="userid"
                                         placeholder="사용하실 아이디를 입력하세요"
+                                        value="{{ old('userid') }}"
                                     />
                                 </div>
                                 <div class="mb-4">
@@ -40,6 +48,7 @@
                                         id="useremail"
                                         name="useremail"
                                         placeholder="example@example.com"
+                                        value="{{ old('useremail') }}"
                                     />
                                 </div>
                                 <div class="mb-4">
@@ -50,6 +59,7 @@
                                         id="password"
                                         name="password"
                                         placeholder="문자, 숫자, 특수문자 포함 8자 이상"
+                                        value="{{ old('password') }}"
                                     />
                                 </div>
                                 <div class="mb-4">
@@ -60,6 +70,7 @@
                                         id="userphone"
                                         name="userphone"
                                         placeholder="010-xxxx-xxxx"
+                                        value="{{ old('userphone') }}"
                                     />
                                 </div>
                                 <div class="text-center pt-1 mb-12 pb-1">
