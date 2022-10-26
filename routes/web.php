@@ -26,10 +26,14 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/login', function() {
     return view('contents.auth.login');
 })->name('login');
-Route::get('/login1', [AuthController::class, 'qqq'])->name('login');
-// sign up
-Route::get('/signup', function() {
-    return view('contents.auth.signup');
-})->name('signup');
-// send sign up form
-Route::post('/signup/process', [AuthController::class, 'signUp_process'])->name('SignUpProcess');
+
+// send login form
+Route::post('/loginProcess', [AuthController::class, 'login_process'])->name('loginProcess');
+
+// register
+Route::get('/register', function() {
+    return view('contents.auth.register');
+})->name('register');
+
+// send register form
+Route::post('/register/process', [AuthController::class, 'register_process'])->name('registerProcess');

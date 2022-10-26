@@ -5,25 +5,42 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Hash; // 패스워드 암호화
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 class AuthController extends Controller
 {
     // send JSON format data
     public function login() {
-        return view('contents/auth/login');
+        return view('contents.auth.login');
+    }
+
+    // 로그인 과정
+    public function login_process(Request $req) {
+        $credentials = $req->validate([
+            'userid' => ['required', 'string', 'max:50'],
+            'password' => ['required', Password::min(8)]
+        ]);
+
+        if (Auth::attempt(['user_id' => $credentials['userid'], 'password' => $credentials['password']])) {
+            $req->session()->regenerate();
+            $req->session()->put('username', Auth::user()->user_name);
+            $req->session()->put('userid', Auth::id());
+
+            return redirect('/')->withSuccess('You have Successfully loggedin');
+        }
+        return redirect()->back()->withErrors('Oppes! You have entered invalid credentials');
     }
 
     // send JSON format data
-    public function signUp() {   
-        return view('contents/auth/signUp');
+    public function register() {
+        return view('contents.auth.signUp');
     }
 
-    public function signUp_process(Request $req) {
+    public function register_process(Request $req) {
         // 데이터 유효성 검사
         $validator = Validator::make($req->all(), [
             'username' => ['required', 'string', 'max:50'],
@@ -37,7 +54,6 @@ class AuthController extends Controller
 
         if ($validator->fails()) { // 유효성 실패 시
             $msg = "validate error";
-            echo "123";exit;
         } else {
             $user = null;
 

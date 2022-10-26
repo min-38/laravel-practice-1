@@ -16,7 +16,7 @@
                                     {{ session('msg') }}
                                 </div>
                             @endif
-                            <form role="form" method="post" action="{{ route('SignUpProcess')}}">
+                            <form role="form" method="post" action="{{ route('registerProcess')}}">
                                 {{ csrf_field() }}
                                 <div class="mb-4">
                                     <label for="username">닉네임 <span class="text-red-600">*</span></label>

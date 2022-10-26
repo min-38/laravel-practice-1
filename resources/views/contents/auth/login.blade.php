@@ -21,27 +21,30 @@
                                     @endif
                                 @endif
                             </div>
-                            <form>
+                            <form role="form" method="post" action="{{ route('loginProcess')}}">
                                 <div class="mb-4">
                                     <input
                                         type="text"
                                         class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                                        id="exampleFormControlInput1"
-                                        placeholder="Username"
+                                        id="userid"
+                                        name="userid"
+                                        placeholder="ID"
                                     />
                                 </div>
                                 <div class="mb-4">
                                     <input
                                         type="password"
                                         class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                                        id="exampleFormControlInput1"
+                                        id="password"
+                                        name="password"
                                         placeholder="Password"
                                     />
                                 </div>
+                                {{ csrf_field() }}
                                 <div class="text-center pt-1 mb-12 pb-1">
                                     <button
                                         class="inline-block px-6 py-2.5 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3 bg-blue-800"
-                                        type="button"
+                                        {{-- type="button" --}}
                                         data-mdb-ripple="true"
                                         data-mdb-ripple-color="light"
                                     >
