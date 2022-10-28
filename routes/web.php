@@ -22,6 +22,7 @@ use App\Http\Controllers\Auth\VerificationController;
 
 // Main Page
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
 // login
 Route::get('/login', function() {
     return view('contents.auth.login');
@@ -29,6 +30,9 @@ Route::get('/login', function() {
 
 // send login form
 Route::post('/loginProcess', [AuthController::class, 'login_process'])->name('loginProcess');
+
+// logout
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // register
 Route::get('/register', function() {

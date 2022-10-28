@@ -11,6 +11,7 @@ class HomeController extends Controller
 {
     // send JSON format data
     public function index() {
+        
         // 데이터 가져오기
         return view('contents/home');
     }

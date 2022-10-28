@@ -28,11 +28,22 @@ class AuthController extends Controller
         if (Auth::attempt(['user_id' => $credentials['userid'], 'password' => $credentials['password']])) {
             $req->session()->regenerate();
             $req->session()->put('username', Auth::user()->user_name);
-            $req->session()->put('userid', Auth::id());
+            $req->session()->put('userid', Auth::user()->user_id);
 
             return redirect('/')->withSuccess('You have Successfully loggedin');
         }
         return redirect()->back()->withErrors('Oppes! You have entered invalid credentials');
+    }
+
+    // 로그아웃 처리
+    public function logout(Request $request) {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->back();
+            //->with('message','logout succesful');
     }
 
     // send JSON format data
