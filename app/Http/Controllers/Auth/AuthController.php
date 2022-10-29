@@ -95,7 +95,7 @@ class AuthController extends Controller
 
         return redirect()->back()
                 ->withInput()
-                ->with('success', false)
+                ->with('error', true)
                 ->with('msg', $msg);
                 // ->json($validator->errors(), 422);
     }
