@@ -28,7 +28,9 @@ class AuthController extends Controller
         if (Auth::attempt(['user_id' => $credentials['userid'], 'password' => $credentials['password']])) {
             $req->session()->regenerate();
             $req->session()->put('username', Auth::user()->user_name);
-            $req->session()->put('userid', Auth::user()->user_id);
+            $req->session()->put('userpid', Auth::user()->upid);
+            $req->session()->put('rank', Auth::user()->user_rank);
+            $req->session()->put('login', true);
 
             return redirect('/')->withSuccess('You have Successfully loggedin');
         }
@@ -58,7 +60,7 @@ class AuthController extends Controller
             'userid' => ['required', 'string', 'max:50'],
             'useremail' => ['required', 'email'],
             'userphone' => ['nullable', 'digits:10'],
-            'password' => ['required', Password::min(8)]
+            'password' => ['required', 'confirmed', Password::min(8)]
         ]);
 
         $msg = "";

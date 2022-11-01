@@ -63,6 +63,17 @@
                                     />
                                 </div>
                                 <div class="mb-4">
+                                    <label for="password">패스워드 재확인<span class="text-red-600">*</span></label>
+                                    <input
+                                        type="password"
+                                        class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                                        id="password"
+                                        name="password_confirmation"
+                                        placeholder="문자, 숫자, 특수문자 포함 8자 이상"
+                                        value="{{ old('password_check') }}"
+                                    />
+                                </div>
+                                <div class="mb-4">
                                     <label for="userphone">전화번호</label>
                                     <input
                                         type="text"
