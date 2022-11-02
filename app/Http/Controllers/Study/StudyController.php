@@ -82,4 +82,18 @@ class StudyController extends Controller
         }
         return $req;
     }
+
+    public function view(Request $req) {
+        $study = Study::join('users', 'study_writer', '=', 'users.upid')
+                    ->where('study.deleted_at', null)
+                    ->where('users.deleted_at', null)
+                    ->where('study_id', $req->id)
+                    ->select('study.*', 'users.user_name as userName')->first();
+                    // ->first();
+
+        if($study != null) {
+            return view('contents.study.view', compact('study'));
+        }
+        return redirect('/study/list')->with('msg', '존재하지 않는 게시글입니다.');
+    }
 }
