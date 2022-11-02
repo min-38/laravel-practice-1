@@ -13,8 +13,17 @@ use App\Models\Study;
 class StudyController extends Controller
 {
     // 게시글 목록
-    public function list() {
-        // code here
+    public function list(Request $req) {
+        $studies = Study::join('users', 'study_writer', '=', 'users.upid')
+                    ->where('study.deleted_at', null)
+                    ->where('users.deleted_at', null)
+                    ->orderByDesc('created_at')
+                    ->paginate(
+                        $perPage = 15, $columns = ['study.*', 'users.user_name as userName'], $pageName = 'users'
+                    );
+        
+        return view('contents.study.list', compact('studies'));
+        
     }
 
     // 게시글 등록
