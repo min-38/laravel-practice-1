@@ -49,18 +49,8 @@ Route::post('/register/process', [AuthController::class, 'register_process'])->n
 // study board list
 Route::get('/study/list', [StudyController::class, 'list'])->name('studyList');
 
-// study board write
-Route::get('/study/write', function (Request $req) {
-    // You don't have permission to write
-    if(!$req->session()->get('login') || $req->session()->get('rank') > 1) { // rank 0, 1
-        // 글 작성 권한 없음
-        return redirect()->back()->withErrors('You don\'t have permission to write');
-    }
-    return view('contents.study.write');
-});
+Route::get('/study/write/{id?}', [StudyController::class, 'write'])->name('studyWrite'); // study board write
+Route::get('/study/view/{id}', [StudyController::class, 'view'])->name('studyView'); // study board view
+Route::post('/study/upload', [StudyController::class, 'upload'])->name('studyUpload'); // study board upload
+Route::put('/study/update', [StudyController::class, 'update'])->name('studyUpdate'); // study board update
 
-// study board write
-Route::post('/study/upload', [StudyController::class, 'write'])->name('studyWrite');
-
-// study board view
-Route::get('/study/view/{id}', [StudyController::class, 'view'])->name('studyView');
