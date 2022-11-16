@@ -8,11 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class Study extends Authenticatable
+class Post extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $table = 'study';
+    protected $table = 'posts';
 
     /**
      * The attributes that are mass assignable.
@@ -20,10 +20,10 @@ class Study extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'study_title',
-        'study_content',
-        'study_title',
-        'study_writer',
+        'type',
+        'title',
+        'content',
+        'writer',
         'isPrivate',
         'deleted_at'
     ];

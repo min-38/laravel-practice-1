@@ -28,7 +28,7 @@ class AuthController extends Controller
         if (Auth::attempt(['user_id' => $credentials['userid'], 'password' => $credentials['password']])) {
             $req->session()->regenerate();
             $req->session()->put('username', Auth::user()->user_name);
-            $req->session()->put('userpid', Auth::user()->upid);
+            $req->session()->put('userpid', Auth::user()->id);
             $req->session()->put('rank', Auth::user()->user_rank);
             $req->session()->put('login', true);
 

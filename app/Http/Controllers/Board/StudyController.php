@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Study;
+namespace App\Http\Controllers\Board;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,23 +8,42 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Hash; // 패스워드 암호화
-use App\Models\Study;
+
+// models
+use App\Models\Post;
+use App\Models\Attachment;
+use App\Models\AtchParent;
+
+// Interfaces
+use App\Interfaces\StudyInterface;
+use App\Interfaces\FileInterface;
 
 class StudyController extends Controller
 {
-    // 게시글 목록
-    public function list(Request $req) {
+    public $study, $file;
 
-        $studies = Study::join('users', 'study_writer', '=', 'users.upid')
-                    ->where('study.deleted_at', null)
-                    ->where('users.deleted_at', null)
-                    ->orderByDesc('created_at')
-                    ->paginate(
-                        $perPage = 10, $columns = ['study.*', 'users.user_name as userName'], $pageName = 'page'
-                    );
-        
+    public function __construct(StudyInterface $study, FileInterface $file) {
+        $this->study = $study;
+        $this->file = $file;
+    }
+
+    // 게시글 목록
+    public function index(Request $req) {
+        $studies = $this->study->getAllStudies();
         return view('contents.study.list', compact('studies'));
-        
+    }
+
+    // 게시글 뷰
+    public function view(Request $req) {
+        $study = $this->study->getStudy($req->id);
+        $files = $this->file->getFile($study->id);
+
+        if($study != null) {
+
+            // dd($files);exit;
+            return view('contents.study.view', compact('study', 'files'));
+        }
+        return redirect('/study/list')->with('msg', '존재하지 않는 게시글입니다.');
     }
 
     // 게시글 작성/수정 view 출력
@@ -46,23 +65,21 @@ class StudyController extends Controller
             $study = null;
             $action = "등록";
             $actionTo = route('studyUpload');
-            $method = "POST";
 
             if($req->id != null) {
-                $study = Study::where('deleted_at', null)
-                            ->where('study_id', $req->id)
-                            ->select('study_id', 'study_title', 'study_content', 'study_writer')->first();
+                $study = Post::where('deleted_at', null)
+                            ->where('id', $req->id)
+                            ->where('writer', $req->session()->get('userpid'))
+                            ->select('id', 'title', 'content', 'writer')->first();
                 
-                if($req->session()->get('rank') != 0 && $req->session()->get('userpid') != $study->id) {
-                    $study = null;
-                } else {
+                if($study != null) {
                     $action = "수정";
-                    $actionTo = route('studyUpdate');
-                    $method = "PUT";
+                    $actionTo = route('studyUpdate', $study->id);
                 }
             }
-            return view('contents.study.write', compact('study', 'action', 'actionTo', 'method'));
+            return view('contents.study.write', compact('study', 'action', 'actionTo'));
         }
+
         return redirect()->back()
                 ->withInput()
                 ->with('error', true)
@@ -75,37 +92,45 @@ class StudyController extends Controller
         $validator = Validator::make($req->all(), [
             'studyTitle' => ['required', 'string', 'max:50'],
             'studyContent' => ['required', 'string'],
+            'private' => ['string'],
+            'password' => ['string'],
+            'uploadFiles.*' => ['file', 'max:10000000']
         ]);
 
         $msg = "";
         if ($validator->fails()) { // 유효성 실패 시
             $msg = "validate error";
+            echo $msg;exit;
         } else {
-            $req = $this->ValidatePrivate($req);
+            $data = $req->all();
+            $data = $this->ValidatePrivate($data);
+            $data['writer'] = $req->session()->get('userpid');
 
-            $study = null;
+            $post_id = $this->study->createStudyPost($data)->id;
+            
+            $fileIds = array();
+            if($req->uploadFiles != null) {
+                foreach($req->uploadFiles as $file) {
 
-            try {
-                $study = Study::create([
-                    'study_title' => $req->studyTitle,
-                    'study_content' => $req->studyContent,
-                    'study_writer' => $req->session()->get('userpid'),
-                    'isPrivate' => $req->private,
-                    'password' => Hash::make($req->password),
-                ]);
+                    $orgFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $name = MD5(time() . "_" . $orgFilename) . ".bin";
 
-                $msg = "등록되었습니다";
-            } catch (\Exception $e) {
-                // 에러 로그 기록 필요
-                $msg = "등록 실패";
+                    $fileId = $this->file->createFilePost($file, $name, public_path('board'))->id;
+                    array_push($fileIds, $fileId);
+
+                    $file->move(public_path('board'), $name);
+                }
+                
+                $this->file->relatePostnFile($post_id, $fileIds);
             }
+            
+            
 
-            if($study != null) {
-                return redirect('/study/view/' . $study->id)
+            return redirect(route('studyView', $post_id))
                         ->with('success', true)
                         ->with('msg', $msg);
-            }
         }
+
         return redirect()->back()
                 ->withInput()
                 ->with('error', true)
@@ -113,7 +138,7 @@ class StudyController extends Controller
     }
 
     // 게시글 수정
-    public function update(Request $req) {
+    public function update(Request $req, $id) {
         // You don't have permission to write
         if(!$req->session()->get('login') || $req->session()->get('rank') > 1) { // rank 0, 1
             // 글 작성 권한 없음
@@ -124,7 +149,6 @@ class StudyController extends Controller
         $validator = Validator::make($req->all(), [
             'studyTitle' => ['required', 'string', 'max:50'],
             'studyContent' => ['required', 'string'],
-            'id' => ['required', 'integer']
         ]);
 
         $msg = "";
@@ -134,9 +158,13 @@ class StudyController extends Controller
             $updated = true; // 업데이트 성공 여부
 
             try {
-                Study::where('study_id', $req->id)
-                    ->where('deleted_at', null)
-                    ->update(['study_title' => $req->studyTitle], ['study_content' => $req->studyContent], ['updated_at' => 'NOW()']);
+                // post 찾기
+                $post = Post::findOrfail($id);
+                
+                // post 수정
+                $post->title = $req->studyTitle;
+                $post->content = $req->studyContent;
+                $post->save();
 
                 $msg = "수정되었습니다";
             } catch (\Exception $e) {
@@ -145,7 +173,7 @@ class StudyController extends Controller
                 $updated = false;
             }
 
-            return redirect('/study/view/' . $req->id)
+            return redirect(route('studyView', $id))
                         ->with('success', $updated)
                         ->with('msg', $msg);
         }
@@ -155,31 +183,21 @@ class StudyController extends Controller
                 ->with('msg', $msg);
     }
 
-    private function ValidatePrivate($req) {
-        if($req->private != 'on') {
-            $req->private = 'N';
-            $req->password = null;
+    private function ValidatePrivate($data) {
+        if(!isset($data['private']) || $data['private'] != 'on') {
+            $data['private'] = 'N';
+            $data['password'] = null;
         } else {
-            if($req->password == null) {
-                $req->private = 'N';
+            if($data['password'] == null) {
+                $data['private'] = 'N';
+                $data['password'] = null;
             } else {
-                $req->private = 'Y';
+                $data['private'] = 'Y';
             }
+            
+            
         }
-        return $req;
-    }
-
-    public function view(Request $req) {
-        $study = Study::join('users', 'study_writer', '=', 'users.upid')
-                    ->where('study.deleted_at', null)
-                    ->where('users.deleted_at', null)
-                    ->where('study_id', $req->id)
-                    ->select('study.*', 'users.user_name as userName')->first();
-                    // ->first();
-
-        if($study != null) {
-            return view('contents.study.view', compact('study'));
-        }
-        return redirect('/study/list')->with('msg', '존재하지 않는 게시글입니다.');
+        
+        return $data;
     }
 }

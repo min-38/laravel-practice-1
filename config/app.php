@@ -195,6 +195,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /* mine */
+        App\Providers\AppRepositoryProvider::class
     ],
 
     /*
