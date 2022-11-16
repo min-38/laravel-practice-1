@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Study\StudyController;
+use App\Http\Controllers\Board\StudyController;
 use App\Http\Controllers\Auth\VerificationController;
 
 /*
@@ -47,10 +47,9 @@ Route::post('/register/process', [AuthController::class, 'register_process'])->n
 
 /* Study */
 // study board list
-Route::get('/study/list', [StudyController::class, 'list'])->name('studyList');
-
+Route::get('/study', [StudyController::class, 'index'])->name('studyList'); // study listing
 Route::get('/study/write/{id?}', [StudyController::class, 'write'])->name('studyWrite'); // study board write
-Route::get('/study/view/{id}', [StudyController::class, 'view'])->name('studyView'); // study board view
-Route::post('/study/upload', [StudyController::class, 'upload'])->name('studyUpload'); // study board upload
-Route::put('/study/update', [StudyController::class, 'update'])->name('studyUpdate'); // study board update
+Route::get('/study/{id}', [StudyController::class, 'view'])->name('studyView'); // study board view
 
+Route::post('/study', [StudyController::class, 'store'])->name('studyUpload'); // study board store
+Route::put('/study/{id}', [StudyController::class, 'update'])->name('studyUpdate'); // study board update

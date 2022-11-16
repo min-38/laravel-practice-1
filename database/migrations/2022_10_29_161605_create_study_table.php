@@ -23,6 +23,7 @@ return new class extends Migration
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable()->comment("게시글 삭제 시간");
 
+            
             $table->foreign('study_writer')->references('upid')->on('users')->onDelete('CASCADE');
         });
     }
