@@ -35,6 +35,10 @@ class FileRepository implements FileInterface {
         }
     }
 
+    public function downFile($fileName) {
+        return Attachment::where('atch_chg_name', $fileName . ".bin")->first();
+    }
+
         // AtchParent::create([
         //     'id' => $study->id,
         //     'atchid' => $atch->id,

@@ -39,8 +39,6 @@ class StudyController extends Controller
         $files = $this->file->getFile($study->id);
 
         if($study != null) {
-
-            // dd($files);exit;
             return view('contents.study.view', compact('study', 'files'));
         }
         return redirect('/study/list')->with('msg', '존재하지 않는 게시글입니다.');
@@ -87,7 +85,7 @@ class StudyController extends Controller
     }
 
     // 게시글 등록 진행
-    public function upload(Request $req) {
+    public function store(Request $req) {
         // 데이터 유효성 검사
         $validator = Validator::make($req->all(), [
             'studyTitle' => ['required', 'string', 'max:50'],

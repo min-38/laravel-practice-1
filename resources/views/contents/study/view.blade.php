@@ -14,17 +14,16 @@
             {{ $study->content }}
         </div>
         <div class="mb-12">
-        @if ($files != null)
+        @if ($files != null && count($files) > 0)
             <div>
                 <span class="">첨부파일</span>
             </div>
             <div>
                 @foreach ($files as $file)
-                <a href="">{{ $file->atch_name }}</a>
+                <a href="{{ route('downFile', pathinfo($file->atch_chg_name, PATHINFO_FILENAME) ) }}">{{ $file->atch_name }}</a>
                 @endforeach  
             </div>
-            
-        @endif          
+        @endif
         </div>
     </div>
 
