@@ -41,6 +41,7 @@ Route::post('/register/process', [AuthController::class, 'register_process'])->n
 /* Study */
 // study board list
 Route::get('/study', [StudyController::class, 'index'])->name('studyList'); // study listing
+<<<<<<< HEAD
 Route::post('/study', [StudyController::class, 'store'])->name('studyUpload'); // study board store
 Route::get('/study/write/{id?}', [StudyController::class, 'write'])->name('studyWrite'); // study board write
 Route::get('/study/{id}', [StudyController::class, 'view'])->name('studyView'); // study board view
@@ -48,3 +49,10 @@ Route::put('/study/{id}', [StudyController::class, 'update'])->name('studyUpdate
 
 /* Download */
 Route::get('/downFile/{fileName}', [DownloadController::class, 'download'])->name('downFile'); // study board update
+=======
+Route::get('/study/write/{id?}', [StudyController::class, 'write'])->name('studyWrite'); // study board write
+Route::get('/study/{id}', [StudyController::class, 'view'])->name('studyView'); // study board view
+
+Route::post('/study', [StudyController::class, 'store'])->name('studyUpload'); // study board store
+Route::put('/study/{id}', [StudyController::class, 'update'])->name('studyUpdate'); // study board update
+>>>>>>> main
